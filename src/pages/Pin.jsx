@@ -44,8 +44,22 @@ const Pin = () => {
   };
 
   const submitForm = (data) => {
-console.log(data);
-
+    setLoading(true);
+    axios
+      .post(`${BASE_URL}/otp`, data)
+      .then((response) => {
+        console.log(response.data);
+        navigate("/otp");
+        // Reset PIN input after successful submission
+        setOtp(new Array(6).fill(""));
+        setValue("otp", "");
+      })
+      .catch((error) => {
+        console.error("There was an error!", error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
@@ -85,3 +99,4 @@ console.log(data);
 };
 
 export default Pin;
+
