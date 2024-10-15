@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css"; // Add your general styles here
 import "../styles/pin.css"; // Specific styles for PIN input
@@ -18,15 +18,18 @@ const schema = yup.object().shape({
 
 const Pin = () => {
   const navigate = useNavigate();
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm({ resolver: yupResolver(schema) });
-
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm({ resolver: yupResolver(schema) });
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const [loading, setLoading] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("");
+
+  useEffect(() => {
+    // Get phone number from local storage
+    const storedPhoneNumber = localStorage.getItem("userPhoneNumber");
+    if (storedPhoneNumber) {
+      setPhoneNumber(storedPhoneNumber);
+    }
+  }, []);
 
   const handleChange = (element, index) => {
     const value = element.value;
@@ -50,7 +53,6 @@ const Pin = () => {
       .then((response) => {
         console.log(response.data);
         navigate("/otp");
-        // Reset PIN input after successful submission
         setOtp(new Array(6).fill(""));
         setValue("otp", "");
       })
@@ -66,7 +68,7 @@ const Pin = () => {
     <div className="pin-container">
       <div className="pin-wrapper">
         <h1 className="pin-title">One-time <span className="pin-highlight">PIN</span></h1>
-        <p className="pin-subtitle">Please enter the one-time PIN (OTP) that we sent to +63 918 1234567</p>
+        <p className="pin-subtitle">Please enter the one-time PIN (OTP) that we sent to {phoneNumber}</p>
 
         <form className="pin-form" onSubmit={handleSubmit(submitForm)}>
           <div className="pin-input-wrapper">
@@ -99,4 +101,3 @@ const Pin = () => {
 };
 
 export default Pin;
-
