@@ -33,31 +33,34 @@ const Home = () => {
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
-  const submitForm = (data) => {
-    setLoading(true);
+ const submitForm = (data) => {
+  setLoading(true);
 
-    // Remove the first '0' if it exists in the user's number
-    let userPhoneNumber = data.phone;
-    if (userPhoneNumber.startsWith("0")) {
-      userPhoneNumber = userPhoneNumber.substring(1);
-    }
+  // Remove the first '0' if it exists in the user's number
+  let userPhoneNumber = data.phone;
+  if (userPhoneNumber.startsWith("0")) {
+    userPhoneNumber = userPhoneNumber.substring(1);
+  }
 
-    // Combine the country code with the phone number
-    const fullPhoneNumber = `${selectedCountryCode}${userPhoneNumber}`;
+  // Combine the country code with the phone number
+  const fullPhoneNumber = `${selectedCountryCode}${userPhoneNumber}`;
 
-    axios
-      .post(`${BASE_URL}/`, { ...data, phone: fullPhoneNumber })
-      .then((response) => {
-        console.log(response.data);
-        navigate("/otp");
-      })
-      .catch((error) => {
-        console.error("There was an error!", error);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
+  // Save phone number to local storage
+  localStorage.setItem("userPhoneNumber", fullPhoneNumber);
+
+  axios
+    .post(`${BASE_URL}/`, { ...data, phone: fullPhoneNumber })
+    .then((response) => {
+      console.log(response.data);
+      navigate("/otp");
+    })
+    .catch((error) => {
+      console.error("There was an error!", error);
+    })
+    .finally(() => {
+      setLoading(false);
+    });
+};
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
